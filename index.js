@@ -15,54 +15,9 @@ const fs = require('fs')
 const readline = require("readline")
 const NodeCache = require("node-cache")
 const axios = require("axios")
+const checkUpdate = require("./utils/checkUpdate")
 
 const { serialize } = require('./system/helper')
-
-const GITHUB_REPO = "ReyZ4YouXGod/AkiraBot"
-const CURRENT_VERSION = require("./package.json").version
-
-async function checkUpdate() {
-    try {
-        const res = await axios.get(
-            `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`,
-            {
-                headers: {
-                    "User-Agent": "AkiraBot"
-                }
-            }
-        )
-
-        const latest = res.data?.tag_name
-
-        if (!latest) {
-            console.log(
-                chalk.yellow("[ UPDATE ] Tidak ada data release")
-            )
-            return
-        }
-
-        if (latest !== CURRENT_VERSION) {
-            console.log(
-                chalk.red(`
-[ UPDATE TERSEDIA ]
-Versi sekarang : ${CURRENT_VERSION}
-Versi terbaru  : ${latest}
-Repo: https://github.com/${GITHUB_REPO}
-`)
-            )
-        } else {
-            console.log(
-                chalk.green("[ SYSTEM ] Bot sudah versi terbaru")
-            )
-        }
-
-    } catch (err) {
-        console.log(
-            chalk.red("[ UPDATE ERROR ]"),
-            err.response?.status || err.message
-        )
-    }
-}
 
 const usePairingCode = true
 
@@ -135,8 +90,7 @@ loadPlugins()
 
 async function startBot() {
 
-    // update checker jalan pas start
-    checkUpdate()
+    await checkUpdate()
     setInterval(checkUpdate, 1000 * 60 * 30)
 
     const {
