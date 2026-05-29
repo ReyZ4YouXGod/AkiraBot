@@ -1,8 +1,9 @@
 const axios = require("axios")
-const chalk = require("chalk")
 
 const CURRENT_VERSION = require("../package.json").version
 const GITHUB_REPO = "ReyZ4YouXGod/AkiraBot"
+
+let lastStatus = null
 
 async function checkUpdate() {
     try {
@@ -12,12 +13,25 @@ async function checkUpdate() {
 
         const latest = res.data?.version
 
-        if (latest !== CURRENT_VERSION) {
-            console.log(`[ UPDATE ] ${CURRENT_VERSION} -> ${latest}`)
-        } else {
-            console.log("[ SYSTEM ] Bot sudah versi terbaru")
+        if (!latest) return
+
+        
+        if (!lastStatus) {
+            lastStatus = latest
+            console.log(`[ SYSTEM ] Version aktif: ${CURRENT_VERSION}`)
+            return
         }
 
+        
+        if (latest !== CURRENT_VERSION && lastStatus !== latest) {
+            console.log(
+                `[ UPDATE TERSEDIA ] ${CURRENT_VERSION} -> ${latest}`
+            )
+            lastStatus = latest
+            return
+        }
+
+        // kalau sama, diam saja (tidak spam)
     } catch (err) {
         console.log("[ UPDATE ERROR ]", err.message)
     }
