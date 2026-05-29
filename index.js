@@ -24,7 +24,12 @@ const CURRENT_VERSION = require("./package.json").version
 async function checkUpdate() {
     try {
         const res = await axios.get(
-            `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
+            `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`,
+            {
+                headers: {
+                    "User-Agent": "AkiraBot"
+                }
+            }
         )
 
         const latest = res.data?.tag_name
@@ -54,7 +59,7 @@ Repo: https://github.com/${GITHUB_REPO}
     } catch (err) {
         console.log(
             chalk.red("[ UPDATE ERROR ]"),
-            err.message
+            err.response?.status || err.message
         )
     }
 }
