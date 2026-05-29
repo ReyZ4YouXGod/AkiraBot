@@ -130,11 +130,14 @@ loadPlugins()
 
 async function startBot() {
 
+    // update checker jalan pas start
+    checkUpdate()
+    setInterval(checkUpdate, 1000 * 60 * 30)
+
     const {
         state,
         saveCreds
-    } =
-    await useMultiFileAuthState("./session")
+    } = await useMultiFileAuthState("./session")
 
     let waVersion =
         [2, 3000, 1017502444]
