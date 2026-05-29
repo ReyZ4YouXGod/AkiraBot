@@ -31,15 +31,26 @@ AkiraBot/
 ├── config.js       # Config utama
 └── package.json
 
-👨‍💻 Developer
-ReyCloudDev
+# 🤖 AkiraBot
 
-📄 License
-MIT License
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-18.x-green?logo=node.js" />
+  <img src="https://img.shields.io/badge/WhatsApp-Bot-25D366?logo=whatsapp&logoColor=white" />
+  <img src="https://img.shields.io/badge/Status-Active-success" />
+  <img src="https://img.shields.io/badge/License-MIT-blue.svg" />
+</p>
 
-Kalau mau gue upgrade lagi, bisa gue bikin:
-- [README versi “pro startup” (lebih serius & clean banget)](reference-followup:1569)
-- [README aesthetic cyber / hacker style](reference-followup:1628)
-- atau [sekalian bikin badge GitHub (stars, forks, version)](reference-followup:1673)
-
-Tinggal bilang aja, jangan malu.
+<p align="center">
+  <a href="https://github.com/ReyZ4YouXGod/AkiraBot">
+    <img src="https://img.shields.io/badge/GitHub-AkiraBot-black?logo=github" />
+  </a>
+  <a href="https://wa.me/6281260512743">
+    <img src="https://img.shields.io/badge/WhatsApp-Contact-green?logo=whatsapp" />
+  </a>
+  <a href="https://instagram.com/reycloud_dev">
+    <img src="https://img.shields.io/badge/Instagram-@reycloud__dev-E4405F?logo=instagram&logoColor=white" />
+  </a>
+  <a href="https://tiktok.com/@reycloud_dev">
+    <img src="https://img.shields.io/badge/TikTok-@reycloud__dev-black?logo=tiktok" />
+  </a>
+</p>
