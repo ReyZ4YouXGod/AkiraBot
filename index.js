@@ -18,6 +18,47 @@ const axios = require("axios")
 
 const { serialize } = require('./system/helper')
 
+const GITHUB_REPO = "ReyZ4YouXGod/AkiraBot"
+const CURRENT_VERSION = require("./package.json").version
+
+async function checkUpdate() {
+    try {
+        const res = await axios.get(
+            `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`
+        )
+
+        const latest = res.data?.tag_name
+
+        if (!latest) {
+            console.log(
+                chalk.yellow("[ UPDATE ] Tidak ada data release")
+            )
+            return
+        }
+
+        if (latest !== CURRENT_VERSION) {
+            console.log(
+                chalk.red(`
+[ UPDATE TERSEDIA ]
+Versi sekarang : ${CURRENT_VERSION}
+Versi terbaru  : ${latest}
+Repo: https://github.com/${GITHUB_REPO}
+`)
+            )
+        } else {
+            console.log(
+                chalk.green("[ SYSTEM ] Bot sudah versi terbaru")
+            )
+        }
+
+    } catch (err) {
+        console.log(
+            chalk.red("[ UPDATE ERROR ]"),
+            err.message
+        )
+    }
+}
+
 const usePairingCode = true
 
 const question = (text) => {
