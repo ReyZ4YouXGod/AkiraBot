@@ -1,38 +1,33 @@
+const fetch = require("node-fetch")
+
 module.exports = {
   command: ["qris"],
 
   async run(sock, m, { args }) {
-    const jid = m.chat
 
+    const jid = m.chat
     const amount = args[0]
 
     if (!amount || isNaN(amount)) {
-      return m.reply(
-        "Format:\n.qris 1000"
-      )
+      return m.reply("Format:\n.qris 10000")
     }
 
     const project = "reyclouddev"
     const api_key = global.qris_api_key
-
-    const order_id =
-      "INV-" +
-      Date.now()
+    const order_id = "INV-" + Date.now()
 
     try {
 
       await m.reply("⏳ Membuat QRIS...")
 
+      // CREATE QRIS
       const create = await fetch(
         "https://app.pakasir.com/api/transactioncreate/qris",
         {
           method: "POST",
-
           headers: {
-            "Content-Type":
-              "application/json"
+            "Content-Type": "application/json"
           },
-
           body: JSON.stringify({
             project,
             order_id,
@@ -42,35 +37,21 @@ module.exports = {
         }
       )
 
-      const json =
-        await create.json()
-
-      console.log(json)
-
-      const payment =
-        json.payment
+      const json = await create.json()
+      const payment = json.payment
 
       if (!payment) {
-
-        return m.reply(
-          "❌ Gagal membuat QRIS"
-        )
+        return m.reply("❌ Gagal membuat QRIS")
       }
 
+      // QR IMAGE (simple)
       const qrUrl =
         "https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=" +
-        encodeURIComponent(
-          payment.payment_number
-        )
-        
-      await sock.sendMessage(
-        jid,
-        {
-          image: {
-            url: qrUrl
-          },
+        encodeURIComponent(payment.payment_number)
 
-          caption:
+      await sock.sendMessage(jid, {
+        image: { url: qrUrl },
+        caption:
 `╭━━━〔 QRIS PAYMENT 〕━━━⬣
 
 🧾 Order : ${order_id}
@@ -78,87 +59,52 @@ module.exports = {
 💸 Fee : ${payment.fee}
 💵 Total : ${payment.total_payment}
 
-⏰ Expired :
-${payment.expired_at}
+⏰ Expired : ${payment.expired_at}
+
+📌 Status : PENDING
 
 ╰━━━━━━━━━━━━━━━━⬣`
-        },
-        {
-          quoted: m
-        }
-      )
+      }, { quoted: m })
 
-      let check = setInterval(
-        async () => {
+      // AUTO CHECK STATUS
+      const check = setInterval(async () => {
 
-          try {
+        try {
 
-            const res =
-              await fetch(
-                `https://app.pakasir.com/api/transactiondetail?project=${project}&amount=${amount}&order_id=${order_id}&api_key=${api_key}`
-              )
+          const res = await fetch(
+            `https://app.pakasir.com/api/transactiondetail?project=${project}&amount=${amount}&order_id=${order_id}&api_key=${api_key}`
+          )
 
-            const data =
-              await res.json()
+          const data = await res.json()
+          const status = data?.transaction?.status
 
-            const status =
-              data?.transaction?.status
+          if (status === "completed") {
 
-            console.log(
-              "STATUS:",
-              status
-            )
+            clearInterval(check)
 
-            if (
-              status === "completed"
-            ) {
-
-              clearInterval(check)
-
-              await sock.sendMessage(
-                jid,
-                {
-                  text:
-`✅ PEMBAYARAN BERHASIL
+            await sock.sendMessage(jid, {
+              text:
+`✅ PAYMENT SUCCESS
 
 🧾 Order : ${order_id}
 💰 Amount : ${amount}
 📌 Status : PAID`
-                },
-                {
-                  quoted: m
-                }
-              )
-            }
-
-          } catch (e) {
-
-            clearInterval(check)
-
-            console.log(e)
-
-            m.reply(
-              "❌ Error cek pembayaran"
-            )
+            }, { quoted: m })
           }
 
-        },
-        5000
-      )
+        } catch (e) {
+          clearInterval(check)
+          console.log(e)
+        }
 
-      setTimeout(() => {
+      }, 5000)
 
-        clearInterval(check)
-
-      }, 1000 * 60 * 5)
+      // stop after 5 menit
+      setTimeout(() => clearInterval(check), 300000)
 
     } catch (e) {
-
       console.log(e)
-
-      m.reply(
-        "❌ Error create QRIS"
-      )
+      m.reply("❌ Error QRIS")
     }
   }
 }
